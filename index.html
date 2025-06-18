@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <!-- <meta name="robots" content="noindex, nofollow"> -->
+  <!-- <meta http-equiv="Origin-Trial" content="AuEteKxoiWyEJdhy8fHXnBDiaqAexWgpiLmHYjMoFQCFPtO8pJLzmxFdgHubfKLg3/CfjRjornLcNWNxo6ps2AAAAAB6eyJvcmlnaW4iOiJodHRwczovL2ZlbGl4dGF1Ym5lci5naXRodWIuaW86NDQzIiwiZmVhdHVyZSI6IldlYkdQVVN1Ymdyb3Vwc0ZlYXR1cmVzIiwiZXhwaXJ5IjoxNzQ0NzYxNTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZX0="> -->
+
+  <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+  <!-- Replace the content tag with appropriate information -->
+  <meta name="description" content="Our model can create realistic 4D avatars from a single reference image using multi-view diffusion models.">
+  <meta property="og:title" content="MVP4D: Multi-View Portrait Video Diffusion for Animatable 4D Avatars"/>
+  <meta property="og:description" content="Our model can create realistic 4D avatars from a single reference image using multi-view diffusion models."/>
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+  <!-- <meta property="og:image" content="static/images/cap4dbanner.webp" /> -->
+  <!-- <meta property="og:image:width" content="1200"/> -->
+  <!-- <meta property="og:image:height" content="600"/> -->
+
+
+  <!-- <meta name="twitter:title" content="CAP4D: Creating Animatable 4D Portrait Avatars with Morphable Multi-View Diffusion Models"> -->
+  <!-- <meta name="twitter:description" content="Our model can create realistic 4D avatars using any number of reference images."> -->
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+  <!-- <meta name="twitter:card" content="summary_large_image"> -->
+  <!-- Keywords for your paper to be indexed by-->
+  <meta name="keywords" content="digital human, avatar, 4D generative model, multi-view video diffusion, 4D reconstruction, 3D reconstruction, 3D face animation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>MVP4D</title>
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <!-- <link rel="icon" type="image/x-icon" href="static/images/cap4dicon.ico"> -->
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+  rel="stylesheet">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+  <link rel="stylesheet" href="static/css/brush-canvas.css">
+  <link rel="stylesheet" href="static/css/warning.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+</head>
+
+
+<body>
+<section class="hero">
+  <div class="hero-body">
+    <div class="container" style="text-align: center;">
+      <img src="static/images/mvp4dicon.png" alt="cap4d logo" width="12%" style="min-width: 100px;"/>
+    </div>
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered" style="max-width: 750px; text-align: center;">
+          <h1 class="title is-3 publication-title">MVP4D: Multi-View Portrait Video Diffusion for Animatable 4D Avatars</h1>
+          <div class="is-size-5 publication-authors">
+            <!-- Paper authors -->
+            <span class="author-block"> 
+              Anonymous Authors
+            </span>
+            <!-- </span> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- Teaser video-->
+<section class="hero is-small"></section>
+  <div class="hero-body">
+    <div class="container is-max-desktop" style="margin-top: -30px;">
+      <div class="container" style="text-align: center;">
+        <video poster="videos/teaser/teaser_video_poster.webp" data-src="videos/teaser/teaser_video.mp4" id="video_teaser" autoplay muted playsinline loop style="width: 70%; object-fit: cover;">
+          <source 
+          type="video/mp4">
+        </video>
+      </div>
+      <h2 class="subtitle has-text-centered" style="margin-top: 5px;">
+        TL;DR: Our model can create realistic 360 degree 4D portrait avatars from a single reference image.
+      </h2>
+    <!-- <div class="hero-body"> -->
+    </div>
+  </div>
+<!-- </div> -->
+  <!-- </div> -->
+<!-- </section> -->
+<!-- End teaser video -->
+
+
+<!-- Image carousel -->
+<!-- <section class="hero is-small"> -->
+  <div class="hero-body">
+    <!-- <div class="container is-max-desktop"> </div> style="text-align: center;"> -->
+    <div class="container is-max-desktop">
+      <!-- Your image here -->
+      <!-- <h2 class="title is-3">Method Overview</h2> -->
+      <h2 class="title is-3" style="margin-top: -10px; margin-bottom: -30px;">Overview</h2><br>
+      <video poster="videos/method_video_cropped_poster.webp" data-src="videos/method_video_cropped.mp4" id="video_overview" autoplay muted playsinline loop style="width: 100%; object-fit: cover;">
+        <!-- Your video here -->
+        <source  type="video/mp4">
+      </video>
+      <h2 class="subtitle is-max-desktop" style="margin-top: 10px;">
+        MVP4D works in two stages: Given a reference image and an input animation, a <b>morphable multi-view video diffusion model (MMVDM)</b> generates a collection of videos from different views. 
+        Then, the generated videos are distilled into a 4D representation, which can be rendered and viewed in real time. 
+      </h2>
+    </div>
+  </div>
+<!-- </div> -->
+</section>
+
+<!-- End image carousel -->
+
+
+<!-- Youtube video -->
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container is-max-desktop" style="margin-top: -20px; margin-bottom: 10px">
+      <!-- Paper video. -->
+      <h2 class="title is-3">Method</h2>
+      <div class="container" style="text-align: left;">
+        <img src="figures/main_figure.webp" alt="method figure" width="100%"/>
+      </div>
+    <!-- <div class="content "></div> -->
+      <h2 class="subtitle is-max-desktop" style="margin-top: 20px;">
+        <b>Overview of MVP4D.</b> (a) The method takes as input a single reference image that is encoded into the latent
+        space of a variational autoencoder. An off-the-shelf face tracker (FlowFace) estimates 
+        a 3DMM (FLAME) for the reference image, from which
+        we derive conditioning signals that describe camera pose, head pose, and expression. We associate additional
+        conditioning signals with each input noisy latent image based on the desired generated viewpoints, poses, and expressions. 
+        A multi-view video diffusion transformer denoises the latent multi-view video. We then use the variational autoencoder to decode the latent video frames to a series of multi-view image frames (the resulting multi-view video), which is distilled into a 4D representation for real-time visualization.
+      <!-- </div> -->
+      </h2>
+      <!-- <h2 class="title is-4">3D Model Fitting</h2>
+      <div class="container" style="text-align: center;">
+        <img src="diagrams/3d_model_fitting.png" alt="3d model fitting" width="50%"/>
+      </div>
+      <div class="content">
+        Lorem ipsum second text if necessary
+      </div> -->
+    </div>
+  </div>
+
+</section>
+<!-- End youtube video -->
+
+
+<!-- Video carousel -->
+<section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container is-max-desktop" style="margin-top: 10px">
+      <h2 class="title is-3">Gallery</h2>
+
+      <h2 class="subtitle is-max-desktop" style="margin-top: 20px;">
+        We show various avatars generated using MVP4D in different settings: 360-degree avatars from a reference images, 
+        120-degree avatars from a reference images, and more challenging settings such as avatars from images generated 
+        via text-prompt. 
+        Please click on the arrow buttons to the sides to view all results. 
+        <br><br>
+        Reference images are shown in the left column, videos generated by the MMVDM in the middle column and 
+        the final 4D avatar in the last column.
+      </h2>
+      <h2 class="title is-4" style="margin-top: 30px;">
+        360-degree avatars
+      </h2>
+      <div id="results-carousel" class="carousel results-carousel" >
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+          <!-- Column 1 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <img src="videos/showcase/ref/morgan.webp_512x512.webp" alt="Reference" width="90%" />
+            <img src="videos/showcase/ref/robert_downey_jr.webp_512x512.webp" alt="Reference" width="90%" />
+            <h2 class="subtitle" style="margin-top: 5px;">reference image</h2>
+          </div>
+        
+          <!-- Repeat column 2 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <video poster="videos/showcase/360/morgan_videos_poster.webp" data-src="videos/showcase/360/morgan_videos.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <video poster="videos/showcase/360/robert_gen_poster.webp" data-src="videos/showcase/360/robert_gen.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <h2 class="subtitle" style="margin-top: 5px; margin-bottom: 30px">videos generated with MMVDM</h2>
+          </div>
+        
+          <!-- Repeat column 3 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <video poster="videos/showcase/360/morgan_poster.webp" data-src="videos/showcase/360/morgan.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+        
+            <video poster="videos/showcase/360/robert_poster.webp" data-src="videos/showcase/360/robert.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <h2 class="subtitle" style="margin-top: 5px;">MVP4D avatar</h2>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+          <!-- Column 1 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <img src="videos/showcase/ref/mat_damon_512x512.webp" alt="Reference" width="90%" />
+            <img src="videos/showcase/ref/sandra_bullock_512x512.webp" alt="Reference" width="90%" />
+            <h2 class="subtitle" style="margin-top: 5px;">reference image</h2>
+          </div>
+        
+          <!-- Repeat column 2 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <video poster="videos/showcase/360/mat_damon_gen_poster.webp" data-src="videos/showcase/360/mat_damon_gen.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <video poster="videos/showcase/360/sandra_gen_poster.webp" data-src="videos/showcase/360/sandra_gen.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <h2 class="subtitle" style="margin-top: 5px; margin-bottom: 30px">videos generated with MMVDM</h2>
+          </div>
+        
+          <!-- Repeat column 3 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <video poster="videos/showcase/360/mat_damon_poster.webp" data-src="videos/showcase/360/mat_damon.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+        
+            <video poster="videos/showcase/360/sandra_poster.webp" data-src="videos/showcase/360/sandra.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <h2 class="subtitle" style="margin-top: 5px;">MVP4D avatar</h2>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+          <!-- Column 1 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <img src="videos/showcase/ref/tom_cruise_2_512x512.webp" alt="Reference" width="90%" />
+            <img src="videos/showcase/ref/michelle_2_512x512.webp" alt="Reference" width="90%" />
+            <h2 class="subtitle" style="margin-top: 5px;">reference image</h2>
+          </div>
+        
+          <!-- Repeat column 2 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <video poster="videos/showcase/360/cruise_gen_poster.webp" data-src="videos/showcase/360/cruise_gen.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <video poster="videos/showcase/360/michelle_gen_poster.webp" data-src="videos/showcase/360/michelle_gen.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <h2 class="subtitle" style="margin-top: 5px; margin-bottom: 30px">videos generated with MMVDM</h2>
+          </div>
+        
+          <!-- Repeat column 3 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <video poster="videos/showcase/360/cruise_poster.webp" data-src="videos/showcase/360/cruise.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+        
+            <video poster="videos/showcase/360/michelle_2_poster.webp" data-src="videos/showcase/360/michelle_2.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <h2 class="subtitle" style="margin-top: 5px;">MVP4D avatar</h2>
+          </div>
+        </div>
+      </div>
+
+
+      <h2 class="title is-4" style="margin-top: 30px;">
+        120-degree avatars
+      </h2>
+      <div id="results-carousel" class="carousel results-carousel" >
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+          <!-- Column 1 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <img src="videos/showcase/ref/michelle.webp_512x512.webp" alt="Reference" width="90%" />
+            <img src="videos/showcase/ref/keanu_reeves_512x512.webp" alt="Reference" width="90%" />
+            <h2 class="subtitle" style="margin-top: 5px;">reference image</h2>
+          </div>
+        
+          <!-- Repeat column 2 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <video poster="videos/showcase/front/michelle_gen_poster.webp" data-src="videos/showcase/front/michelle_gen.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <video poster="videos/showcase/front/keanu_gen_poster.webp" data-src="videos/showcase/front/keanu_gen.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <h2 class="subtitle" style="margin-top: 5px; margin-bottom: 30px">videos generated with MMVDM</h2>
+          </div>
+        
+          <!-- Repeat column 3 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <video poster="videos/showcase/front/michelle_poster.webp" data-src="videos/showcase/front/michelle.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+        
+            <video poster="videos/showcase/front/keanu_poster.webp" data-src="videos/showcase/front/keanu.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <h2 class="subtitle" style="margin-top: 5px;">MVP4D avatar</h2>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+          <!-- Column 1 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <img src="videos/showcase/ref/johnny_depp_512x512.webp" alt="Reference" width="90%" />
+            <img src="videos/showcase/ref/rihanna_hair.png_512x512.webp" alt="Reference" width="90%" />
+            <h2 class="subtitle" style="margin-top: 5px;">reference image</h2>
+          </div>
+        
+          <!-- Repeat column 2 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <video poster="videos/showcase/front/depp_gen_poster.webp" data-src="videos/showcase/front/depp_gen.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+            <video poster="videos/showcase/front/rihanna_gen_poster.webp" data-src="videos/showcase/front/rihanna_gen.mp4"  autoplay muted playsinline loop width="90%">
+              <source type="video/mp4">
+            </video>
+            <h2 class="subtitle" style="margin-top: 5px; margin-bottom: 30px">videos generated with MMVDM</h2>
+          </div>
+        
+          <!-- Repeat column 3 -->
+          <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+            <video poster="videos/showcase/front/depp_poster.webp" data-src="videos/showcase/front/depp.mp4" autoplay muted playsinline loop width="90%">
+              <source  type="video/mp4">
+            </video>
+        
+            <video poster="videos/showcase/front/rihanna_poster.webp" data-src="videos/showcase/front/rihanna.mp4" autoplay muted playsinline loop width="90%">
+              <source type="video/mp4">
+            </video>
+            <h2 class="subtitle" style="margin-top: 5px;">MVP4D avatar</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Baseline Comparisons</h2>
+      <h2 class="subtitle is-max-desktop" style="margin-top: 20px;">
+        We conduct experiments on the cross-reenactment and self-reenactment tasks. 
+        For quantitative results, we refer to our paper.
+      </h2>
+
+      <div id="results-carousel" class="carousel results-carousel">
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/nersemble_eval/ref/00_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+            <!-- Video Comparison Block -->
+            <div style="text-align: center; width: 40%;">
+              <video poster="videos/nersemble_eval/diffusion_models/sequence_00_poster.webp" data-src="videos/nersemble_eval/diffusion_models/sequence_00.mp4" id="video7" autoplay muted playsinline loop style="width: 100%; max-width: 400px;" data-disable-autoplay="true">
+                <source  type="video/mp4">
+              </video>
+              <h2 class="subtitle has-text-centered is-max-desktop"
+                  style="display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 5px auto 0 auto;">
+                <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+                <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/nersemble_eval/avatars/sequence_00_poster.webp" data-src="videos/nersemble_eval/avatars/sequence_00.mp4" id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source  type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D</span>
+            <span style="flex: 1; text-align: center;">GAGAvatar</span>
+            <span style="flex: 1; text-align: center;">CAP4D</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/nersemble_eval/ref/01_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+            <!-- Video Comparison Block -->
+            <div style="text-align: center; width: 40%;">
+              <video poster="videos/nersemble_eval/diffusion_models/sequence_01_poster.webp" data-src="videos/nersemble_eval/diffusion_models/sequence_01.mp4" id="video7" autoplay muted playsinline loop style="width: 100%; max-width: 400px;" data-disable-autoplay="true">
+                <source  type="video/mp4">
+              </video>
+              <h2 class="subtitle has-text-centered is-max-desktop"
+                  style="display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 5px auto 0 auto;">
+                <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+                <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/nersemble_eval/avatars/sequence_01_poster.webp" data-src="videos/nersemble_eval/avatars/sequence_01.mp4" id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source  type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D</span>
+            <span style="flex: 1; text-align: center;">GAGAvatar</span>
+            <span style="flex: 1; text-align: center;">CAP4D</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/nersemble_eval/ref/02_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+            <!-- Video Comparison Block -->
+            <div style="text-align: center; width: 40%;">
+              <video poster="videos/nersemble_eval/diffusion_models/sequence_02_poster.webp" data-src="videos/nersemble_eval/diffusion_models/sequence_02.mp4" id="video7" autoplay muted playsinline loop style="width: 100%; max-width: 400px;" data-disable-autoplay="true">
+                <source  type="video/mp4">
+              </video>
+              <h2 class="subtitle has-text-centered is-max-desktop"
+                  style="display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 5px auto 0 auto;">
+                <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+                <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/nersemble_eval/avatars/sequence_02_poster.webp" data-src="videos/nersemble_eval/avatars/sequence_02.mp4" id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source  type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D</span>
+            <span style="flex: 1; text-align: center;">GAGAvatar</span>
+            <span style="flex: 1; text-align: center;">CAP4D</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/nersemble_eval/ref/03_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+            <!-- Video Comparison Block -->
+            <div style="text-align: center; width: 40%;">
+              <video poster="videos/nersemble_eval/diffusion_models/sequence_03_poster.webp" data-src="videos/nersemble_eval/diffusion_models/sequence_03.mp4" id="video7" autoplay muted playsinline loop style="width: 100%; max-width: 400px;" data-disable-autoplay="true">
+                <source  type="video/mp4">
+              </video>
+              <h2 class="subtitle has-text-centered is-max-desktop"
+                  style="display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 5px auto 0 auto;">
+                <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+                <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/nersemble_eval/avatars/sequence_03_poster.webp" data-src="videos/nersemble_eval/avatars/sequence_03.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D</span>
+            <span style="flex: 1; text-align: center;">GAGAvatar</span>
+            <span style="flex: 1; text-align: center;">CAP4D</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/nersemble_eval/ref/04_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+            <!-- Video Comparison Block -->
+            <div style="text-align: center; width: 40%;">
+              <video poster="videos/nersemble_eval/diffusion_models/sequence_04_poster.webp" data-src="videos/nersemble_eval/diffusion_models/sequence_04.mp4"  id="video7" autoplay muted playsinline loop style="width: 100%; max-width: 400px;" data-disable-autoplay="true">
+                <source type="video/mp4">
+              </video>
+              <h2 class="subtitle has-text-centered is-max-desktop"
+                  style="display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 5px auto 0 auto;">
+                <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+                <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/nersemble_eval/avatars/sequence_04_poster.webp" data-src="videos/nersemble_eval/avatars/sequence_04.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D</span>
+            <span style="flex: 1; text-align: center;">GAGAvatar</span>
+            <span style="flex: 1; text-align: center;">CAP4D</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/nersemble_eval/ref/05_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+            <!-- Video Comparison Block -->
+            <div style="text-align: center; width: 40%;">
+              <video poster="videos/nersemble_eval/diffusion_models/sequence_05_poster.webp" data-src="videos/nersemble_eval/diffusion_models/sequence_05.mp4" id="video7" autoplay muted playsinline loop style="width: 100%; max-width: 400px;" data-disable-autoplay="true">
+                <source type="video/mp4">
+              </video>
+              <h2 class="subtitle has-text-centered is-max-desktop"
+                  style="display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 5px auto 0 auto;">
+                <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+                <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/nersemble_eval/avatars/sequence_05_poster.webp" data-src="videos/nersemble_eval/avatars/sequence_05.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D</span>
+            <span style="flex: 1; text-align: center;">GAGAvatar</span>
+            <span style="flex: 1; text-align: center;">CAP4D</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/nersemble_eval/ref/06_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+            <!-- Video Comparison Block -->
+            <div style="text-align: center; width: 40%;">
+              <video poster="videos/nersemble_eval/diffusion_models/sequence_06_poster.webp" data-src="videos/nersemble_eval/diffusion_models/sequence_06.mp4"  id="video7" autoplay muted playsinline loop style="width: 100%; max-width: 400px;" data-disable-autoplay="true">
+                <source type="video/mp4">
+              </video>
+              <h2 class="subtitle has-text-centered is-max-desktop"
+                  style="display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 5px auto 0 auto;">
+                <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+                <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/nersemble_eval/avatars/sequence_06_poster.webp" data-src="videos/nersemble_eval/avatars/sequence_06.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D</span>
+            <span style="flex: 1; text-align: center;">GAGAvatar</span>
+            <span style="flex: 1; text-align: center;">CAP4D</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/nersemble_eval/ref/07_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+            <!-- Video Comparison Block -->
+            <div style="text-align: center; width: 40%;">
+              <video poster="videos/nersemble_eval/diffusion_models/sequence_07_poster.webp" data-src="videos/nersemble_eval/diffusion_models/sequence_07.mp4"  id="video7" autoplay muted playsinline loop style="width: 100%; max-width: 400px;" data-disable-autoplay="true">
+                <source type="video/mp4">
+              </video>
+              <h2 class="subtitle has-text-centered is-max-desktop"
+                  style="display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 5px auto 0 auto;">
+                <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+                <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/nersemble_eval/avatars/sequence_07_poster.webp" data-src="videos/nersemble_eval/avatars/sequence_07.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D</span>
+            <span style="flex: 1; text-align: center;">GAGAvatar</span>
+            <span style="flex: 1; text-align: center;">CAP4D</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/nersemble_eval/ref/08_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+            <!-- Video Comparison Block -->
+            <div style="text-align: center; width: 40%;">
+              <video poster="videos/nersemble_eval/diffusion_models/sequence_08_poster.webp" data-src="videos/nersemble_eval/diffusion_models/sequence_08.mp4"  id="video7" autoplay muted playsinline loop style="width: 100%; max-width: 400px;" data-disable-autoplay="true">
+                <source type="video/mp4">
+              </video>
+              <h2 class="subtitle has-text-centered is-max-desktop"
+                  style="display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 5px auto 0 auto;">
+                <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+                <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/nersemble_eval/avatars/sequence_08_poster.webp" data-src="videos/nersemble_eval/avatars/sequence_08.mp4" id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source  type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D</span>
+            <span style="flex: 1; text-align: center;">GAGAvatar</span>
+            <span style="flex: 1; text-align: center;">CAP4D</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/nersemble_eval/ref/09_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+            <!-- Video Comparison Block -->
+            <div style="text-align: center; width: 40%;">
+              <video poster="videos/nersemble_eval/diffusion_models/sequence_09_poster.webp" data-src="videos/nersemble_eval/diffusion_models/sequence_09.mp4"  id="video7" autoplay muted playsinline loop style="width: 100%; max-width: 400px;" data-disable-autoplay="true">
+                <source type="video/mp4">
+              </video>
+              <h2 class="subtitle has-text-centered is-max-desktop"
+                  style="display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 5px auto 0 auto;">
+                <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+                <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/nersemble_eval/avatars/sequence_09_poster.webp" data-src="videos/nersemble_eval/avatars/sequence_09.mp4" id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source  type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D</span>
+            <span style="flex: 1; text-align: center;">GAGAvatar</span>
+            <span style="flex: 1; text-align: center;">CAP4D</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+      </div>
+      <h2 class="subtitle is-max-desktop" style="margin-top: 20px;">
+        <b>Self-reenactment results for forward facing avatars.</b> We show more qualitative results from our self-reenactment evaluation on the Nersemble dataset.
+        We compare multi-view diffusion models (top row) and 4D avatars (bottom row). 
+        CAP4D's MMDM produces sequences that contain a significant amount of temporal flickering, whereas our MMVDM generates videos 
+        that are smooth and consistent. 
+        Our resulting 4D avatar is more detailed and realistic than previous methods, especially with dynamic details such as wrinkles, or challenging structure such as hair. 
+      </h2>
+
+
+        <!-- START RENDERME EVAL ITEM ========================================================================================================= -->
+
+      <div id="results-carousel" class="carousel results-carousel">
+        
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/renderme_eval/ref/07_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/renderme_eval/avatars/sequence_00_poster.webp" data-src="videos/renderme_eval/avatars/sequence_00.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">FYE + PanoHead</span>
+            <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+        
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/renderme_eval/ref/06_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/renderme_eval/avatars/sequence_01_poster.webp" data-src="videos/renderme_eval/avatars/sequence_01.mp4" id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source  type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">FYE + PanoHead</span>
+            <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/renderme_eval/ref/05_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/renderme_eval/avatars/sequence_02_poster.webp" data-src="videos/renderme_eval/avatars/sequence_02.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">FYE + PanoHead</span>
+            <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/renderme_eval/ref/04_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/renderme_eval/avatars/sequence_03_poster.webp" data-src="videos/renderme_eval/avatars/sequence_03.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">FYE + PanoHead</span>
+            <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/renderme_eval/ref/03_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/renderme_eval/avatars/sequence_04_poster.webp" data-src="videos/renderme_eval/avatars/sequence_04.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">FYE + PanoHead</span>
+            <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/renderme_eval/ref/02_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/renderme_eval/avatars/sequence_05_poster.webp" data-src="videos/renderme_eval/avatars/sequence_05.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">FYE + PanoHead</span>
+            <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/renderme_eval/ref/01_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/renderme_eval/avatars/sequence_06_poster.webp" data-src="videos/renderme_eval/avatars/sequence_06.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">FYE + PanoHead</span>
+            <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+        <!-- START NERSEMBLE ITEM =============================================== -->
+        <div class="item item-video3">  
+          <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Reference Image Block -->
+            <div style="text-align: center; width: 20%;">
+              <img src="videos/renderme_eval/ref/00_512x512.webp" alt="method figure" style="width: 100%; max-width: 200px;">
+              <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px; margin-bottom: 15px;">
+                reference image
+              </h2>
+            </div>
+          
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/renderme_eval/avatars/sequence_07_poster.webp" data-src="videos/renderme_eval/avatars/sequence_07.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">FYE + PanoHead</span>
+            <span style="flex: 1; text-align: center;">CAP4D (MMDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D (MMVDM)</span>
+            <span style="flex: 1; text-align: center;">MVP4D</span>
+            <span style="flex: 1; text-align: center;">GT</span>
+          </h2>
+        </div>
+
+      </div>
+      <h2 class="subtitle is-max-desktop" style="margin-top: 20px;">
+        <b>Self-reenactment results for 360-degree avatars.</b> We show more qualitative results from our self-reenactment evaluation on the RenderMe-360 dataset.
+        Our MMDVM can generate significantly better 360 views than previous methods, leading to much more robust 4D avatar that is view-able from all directions.
+      </h2>
+
+      <div id="results-carousel-cross" class="carousel results-carousel">
+        <div class="item item-video3">
+          <div class="container" style="text-align: center;">
+            <img src="videos/cross_eval/ref/00.webp" alt="method figure" width="20%"/>
+            <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px;margin-bottom: 15px">
+              reference image <br>
+            </h2>
+          </div>
+          <!-- <hr style="border: none; height: 0px; background: transparent;"> -->
+          <video poster="videos/cross_eval/videos/cross_00_poster.webp" data-src="videos/cross_eval/videos/cross_00.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D </span>
+            <span style="flex: 1; text-align: center;">GAGAvatar </span>
+            <span style="flex: 1; text-align: center;">CAP4D </span>
+            <span style="flex: 1; text-align: center;">MVP4D </span>
+            <span style="flex: 1; text-align: center;">driving video</span>
+          </h2>
+        </div>
+        <div class="item item-video3">
+          <div class="container" style="text-align: center;">
+            <img src="videos/cross_eval/ref/02.webp" alt="method figure" width="20%"/>
+            <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px;margin-bottom: 15px">
+              reference image <br>
+            </h2>
+          </div>
+          <video poster="videos/cross_eval/videos/cross_02_poster.webp" data-src="videos/cross_eval/videos/cross_02.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D </span>
+            <span style="flex: 1; text-align: center;">GAGAvatar </span>
+            <span style="flex: 1; text-align: center;">CAP4D </span>
+            <span style="flex: 1; text-align: center;">MVP4D </span>
+            <span style="flex: 1; text-align: center;">driving video</span>
+          </h2>
+        </div>
+        <div class="item item-video3">
+          <div class="container" style="text-align: center;">
+            <img src="videos/cross_eval/ref/03.webp" alt="method figure" width="20%"/>
+            <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px;margin-bottom: 15px">
+              reference image <br>
+            </h2>
+          </div>
+          <video poster="videos/cross_eval/videos/cross_03_poster.webp" data-src="videos/cross_eval/videos/cross_03.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D </span>
+            <span style="flex: 1; text-align: center;">GAGAvatar </span>
+            <span style="flex: 1; text-align: center;">CAP4D </span>
+            <span style="flex: 1; text-align: center;">MVP4D </span>
+            <span style="flex: 1; text-align: center;">driving video</span>
+          </h2>
+        </div>
+        <div class="item item-video3">
+          <div class="container" style="text-align: center;">
+            <img src="videos/cross_eval/ref/04.webp" alt="method figure" width="20%"/>
+            <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px;margin-bottom: 15px">
+              reference image <br>
+            </h2>
+          </div>
+          <video poster="videos/cross_eval/videos/cross_04_poster.webp" data-src="videos/cross_eval/videos/cross_04.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D </span>
+            <span style="flex: 1; text-align: center;">GAGAvatar </span>
+            <span style="flex: 1; text-align: center;">CAP4D </span>
+            <span style="flex: 1; text-align: center;">MVP4D </span>
+            <span style="flex: 1; text-align: center;">driving video</span>
+          </h2>
+        </div>
+        <div class="item item-video3">
+          <div class="container" style="text-align: center;">
+            <img src="videos/cross_eval/ref/05.webp" alt="method figure" width="20%"/>
+            <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px;margin-bottom: 15px">
+              reference image <br>
+            </h2>
+          </div>
+          <video poster="videos/cross_eval/videos/cross_05_poster.webp" data-src="videos/cross_eval/videos/cross_05.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D </span>
+            <span style="flex: 1; text-align: center;">GAGAvatar </span>
+            <span style="flex: 1; text-align: center;">CAP4D </span>
+            <span style="flex: 1; text-align: center;">MVP4D </span>
+            <span style="flex: 1; text-align: center;">driving video</span>
+          </h2>
+        </div>
+        <div class="item item-video3">
+          <div class="container" style="text-align: center;">
+            <img src="videos/cross_eval/ref/06.webp" alt="method figure" width="20%"/>
+            <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px;margin-bottom: 15px">
+              reference image <br>
+            </h2>
+          </div>
+          <video poster="videos/cross_eval/videos/cross_06_poster.webp" data-src="videos/cross_eval/videos/cross_06.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D </span>
+            <span style="flex: 1; text-align: center;">GAGAvatar </span>
+            <span style="flex: 1; text-align: center;">CAP4D </span>
+            <span style="flex: 1; text-align: center;">MVP4D </span>
+            <span style="flex: 1; text-align: center;">driving video</span>
+          </h2>
+        </div>
+        <div class="item item-video3">
+          <div class="container" style="text-align: center;">
+            <img src="videos/cross_eval/ref/01.webp" alt="method figure" width="20%"/>
+            <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px;margin-bottom: 15px">
+              reference image <br>
+            </h2>
+          </div>
+          <video poster="videos/cross_eval/videos/cross_01_poster.webp" data-src="videos/cross_eval/videos/cross_01.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D </span>
+            <span style="flex: 1; text-align: center;">GAGAvatar </span>
+            <span style="flex: 1; text-align: center;">CAP4D </span>
+            <span style="flex: 1; text-align: center;">MVP4D </span>
+            <span style="flex: 1; text-align: center;">driving video</span>
+          </h2>
+        </div>
+        <div class="item item-video3">
+          <div class="container" style="text-align: center;">
+            <img src="videos/cross_eval/ref/07.webp" alt="method figure" width="20%"/>
+            <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px;margin-bottom: 15px">
+              reference image <br>
+            </h2>
+          </div>
+          <video poster="videos/cross_eval/videos/cross_07_poster.webp" data-src="videos/cross_eval/videos/cross_07.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D </span>
+            <span style="flex: 1; text-align: center;">GAGAvatar </span>
+            <span style="flex: 1; text-align: center;">CAP4D </span>
+            <span style="flex: 1; text-align: center;">MVP4D </span>
+            <span style="flex: 1; text-align: center;">driving video</span>
+          </h2>
+        </div>
+        <div class="item item-video3">
+          <div class="container" style="text-align: center;">
+            <img src="videos/cross_eval/ref/08.webp" alt="method figure" width="20%"/>
+            <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px;margin-bottom: 15px">
+              reference image <br>
+            </h2>
+          </div>
+          <video poster="videos/cross_eval/videos/cross_08_poster.webp" data-src="videos/cross_eval/videos/cross_08.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D </span>
+            <span style="flex: 1; text-align: center;">GAGAvatar </span>
+            <span style="flex: 1; text-align: center;">CAP4D </span>
+            <span style="flex: 1; text-align: center;">MVP4D </span>
+            <span style="flex: 1; text-align: center;">driving video</span>
+          </h2>
+        </div>
+        <div class="item item-video3">
+          <div class="container" style="text-align: center;">
+            <img src="videos/cross_eval/ref/09.webp" alt="method figure" width="20%"/>
+            <h2 class="subtitle has-text-centered is-max-desktop" style="margin-top: 5px;margin-bottom: 15px">
+              reference image <br>
+            </h2>
+          </div>
+          <video poster="videos/cross_eval/videos/cross_09_poster.webp" data-src="videos/cross_eval/videos/cross_09.mp4"  id="video7" autoplay muted playsinline loop width="100%" data-disable-autoplay="true">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle has-text-centered is-max-desktop" style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="flex: 1; text-align: center;">Portrait4D </span>
+            <span style="flex: 1; text-align: center;">GAGAvatar </span>
+            <span style="flex: 1; text-align: center;">CAP4D </span>
+            <span style="flex: 1; text-align: center;">MVP4D </span>
+            <span style="flex: 1; text-align: center;">driving video</span>
+          </h2>
+        </div>
+      </div>
+      <h2 class="subtitle is-max-desktop" style="margin-top: 20px;">
+        <b>Cross-reenactment results.</b> We generate an avatar based on a single image from the FFHQ dataset. The camera orbits
+        around the head to allow a better assessment of 3D structure. Our method consistently produces 4D avatars 
+        of higher visual quality, 3D consistency and better motion realism even across challenging view deviations. 
+        Our avatar can also model challenging structure such as hair and glasses. 
+      </h2>
+      <!-- <h2 class="subtitle has-text-centered is-max-desktop">
+      </h2> -->
+
+      <!-- <div id="results-carousel2" class="carousel results-carousel">
+        <div class="item">
+          <img src="images/ffhq_1.png" alt="results on ffhq dataset"/>
+          <h2 class="subtitle has-text-centered">
+            First image description.
+          </h2>
+        </div>
+      </div> -->
+    </div>
+  </div>
+</section>
+<!-- End video carousel -->
+
+
+<!-- Video carousel -->
+<section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">More Results</h2>
+
+      <h2 class="title is-4">Speech-driven 4D animation</h2>
+
+      <h2 class="subtitle is-max-desktop"  style="margin-top: 20px;">
+        We can use off-the-shelf speech-driven portrait video animation 
+        models such as Hallo3 to animate MVP4D using input speech audio. 
+        Volume on!
+      </h2>
+
+      <div class="video-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 60%; margin: 0 auto; text-align: center;">
+        <video poster="videos/showcase/speech/cate_poster.webp" data-src="videos/showcase/speech/cate.mp4"  controls width="100%" playsinline>
+          <source type="video/mp4">
+        </video>
+        <video poster="videos/showcase/speech/michelle_poster.webp" data-src="videos/showcase/speech/michelle.mp4"  controls width="100%" playsinline>
+          <source type="video/mp4">
+        </video>
+        <video poster="videos/showcase/speech/morgan_poster.webp" data-src="videos/showcase/speech/morgan.mp4"  controls width="100%" playsinline>
+          <source type="video/mp4">
+        </video>
+        <video poster="videos/showcase/speech/zendaya_poster.webp" data-src="videos/showcase/speech/zendaya.mp4" controls width="100%" playsinline>
+          <source type="video/mp4">
+        </video>
+      </div>
+
+      <h2 class="title is-4" style="margin-top: 30px;">
+        Avatars from text prompts
+      </h2>
+
+      <h2 class="subtitle is-max-desktop"  style="margin-top: 20px;">
+        Using commercially available image generation models, we can generate 4D avatars from text descriptions.
+      </h2>
+
+      <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <!-- Column 1 -->
+        <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+          <img src="videos/showcase/ref/grandma_512x512.webp" alt="Reference" width="90%" />
+          <h2 class="subtitle" style="margin-top: 5px;">reference image</h2>
+        </div>
+      
+        <!-- Repeat column 2 -->
+        <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+          <video poster="videos/showcase/ai/grandma_gen_poster.webp" data-src="videos/showcase/ai/grandma_gen.mp4" autoplay muted playsinline loop width="90%">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle" style="margin-top: 5px; margin-bottom: 30px">videos generated with MMVDM</h2>
+        </div>
+      
+        <!-- Repeat column 3 -->
+        <div style="flex: 1 1 30%; max-width: 30%; text-align: center;">
+          <video poster="videos/showcase/ai/grandma_poster.webp" data-src="videos/showcase/ai/grandma.mp4" autoplay muted playsinline loop width="90%">
+            <source type="video/mp4">
+          </video>
+          <h2 class="subtitle" style="margin-top: 5px;">MVP4D avatar</h2>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const videos = document.querySelectorAll('video[data-src]'); // Select videos with `data-src` attribute
+
+    const observer = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+
+          if (entry.isIntersecting) {
+            // Load video source
+            if (video.dataset.src) {
+              video.src = video.dataset.src; // Assign the actual source
+              video.removeAttribute('data-src'); // Clean up attribute
+            }
+
+            // Play video when visible
+            if (video.hasAttribute("autoplay")) {
+              video.play();
+            }
+          } else {
+            // Pause video when not visible
+            video.pause();
+          }
+        });
+      },
+      {
+        root: null, // Use the viewport
+        threshold: 0.5, // Trigger when 50% of the video is visible
+      }
+    );
+
+    // Observe each video
+    videos.forEach((video) => observer.observe(video));
+  });
+</script>
+
+  </body>
+</html>
