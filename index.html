@@ -123,6 +123,78 @@
 
 <!-- End image carousel -->
 
+<!-- Teaser video-->
+<section class="hero is-small is-light"></section>
+  <!-- <div class="the-canvas" style="max-width: 800px; margin: auto"> -->
+  <div class="the-canvas col-md-8 offset-md-2 rounded card" style="max-width: 800px; margin: auto; background-color: #f5f5f5;">
+    <h2 class="title is-3" style="text-align: center; margin-top: 20px">
+      Interactive Viewer
+    </h2>
+    <!-- <p class="text-center" style="max-width: 750px; text-align: center; margin: auto; margin-bottom: 10px; font-size: 18px;">
+      Click on the images below to inspect 4D avatars in your browser, powered by <a href="https://github.com/felixtaubner/brush_avatar">our modified version</a> of
+      <a href="https://github.com/ArthurBrussee/brush">Brush</a>. Note that this is experimental and quality may be reduced. <br>
+      <strong style="color: #880808;">Usage of this viewer may result in crashes. Please ensure that your available VRAM is greater than 3GB. Do not open this website in multiple tabs. </strong>
+    </p> -->
+    <div style="display: flex; align-items: center; justify-content: center; gap: 0px; flex-wrap: wrap; margin-top: 20px;">
+      <div class="controllable-image" style="flex: 1 1 40%; min-width: 250px; max-width: 40%; text-align: center;  margin-left: auto; margin-right: auto;">
+        <img src="videos/showcase/ref/morgan.webp_512x512.webp" id="reference_image" alt="Reference image" style="width: 100%; margin: auto;">
+        <p style="font-size: 18px; margin-top: 2px;">reference image(s)</p>
+      </div>
+      <div id="webgpu-warning" class="warning">
+        <div class="warning-title">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="warning-icon">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 8v5"></path>
+            <circle cx="12" cy="16" r="0.5" fill="currentColor"></circle>
+          </svg>
+          Browser Not Supported
+        </div>
+        <p class="warning-message">
+          Your browser does not appear to support the interactive viewer. Currently, only Chrome (Desktop) Version 130+ is supported. Displaying a video instead!
+        </p>
+        <video poster="brush_gallery/abraham_lincoln_247_poster.webp" id="video_animation" autoplay muted playsinline loop width="100%" style="margin-top: 10px;">
+          <!-- Your video file here -->
+          <source src="brush_gallery/abraham_lincoln_247_c.mp4"
+          type="video/mp4">
+        </video>
+      </div>
+      <canvas id="brush_canvas" style="width: 100%; max-width: 450px; aspect-ratio: 1/1; text-align: center; display: block; position: relative; margin-left: auto; margin-right: auto;"></canvas>
+    </div>
+    <div class="previews">      
+      <a onclick="loadContent('morgan_freeman')">
+        <img class="card-img" src="videos/showcase/ref/morgan.webp_512x512.webp">
+      </a> 
+      <a onclick="loadContent('michelle_360')">
+        <img class="card-img" src="videos/showcase/ref/michelle_2_512x512.webp">
+      </a>
+      <a onclick="loadContent('tom_cruise')">
+        <img class="card-img" src="videos/showcase/ref/tom_cruise_2_512x512.webp">
+      </a>
+      <a onclick="loadContent('sandra')">
+        <img class="card-img" src="videos/showcase/ref/sandra_bullock_512x512.webp">
+      </a>
+      <a onclick="loadContent('robert')">
+        <img class="card-img" src="videos/showcase/ref/robert_downey_jr.webp_512x512.webp">
+      </a>
+      <a onclick="loadContent('depp')">
+        <img class="card-img" src="videos/showcase/ref/johnny_depp_512x512.webp">
+      </a>
+      <a onclick="loadContent('grandma')">
+        <img class="card-img" src="videos/showcase/ref/grandma_512x512.webp">
+      </a>
+      <a onclick="loadContent('michelle_180')">
+        <img class="card-img" src="videos/showcase/ref/michelle_yeoh.webp_512x512.webp">
+      </a>
+      <a onclick="loadContent('rihanna')">
+        <img class="card-img" src="videos/showcase/ref/rihanna_hair.png_512x512.webp">
+      </a>
+      <a onclick="loadContent('keanu')">
+        <img class="card-img" src="videos/showcase/ref/keanu_reeves_512x512.webp">
+      </a>
+    </div>
+  </div>
+<!-- </div> -->
+</section>
 
 <!-- Youtube video -->
 <section class="hero is-small">
@@ -1233,6 +1305,25 @@
   </div>
 </section>
 
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+
+          <p>
+            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a> which was adopted from the <a href="https://felixtaubner.github.io/cap4d/" target="_blank">CAP4D</a> project page.
+            This website is licensed under a <a rel="license"  href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+            Commons Attribution Share Alike 4.0 International License</a>.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
 <!-- Default Statcounter code for MVP4D
 https://mvp4d.github.io/ -->
 <script type="text/javascript">
@@ -1286,6 +1377,156 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
     // Observe each video
     videos.forEach((video) => observer.observe(video));
   });
+</script>
+
+<script type="module" defer>
+  window.addEventListener("TrunkApplicationStarted", (e) => {
+    // Load with an initial URL.
+    console.log("starting")
+    var start_url = "/gaussian_gallery/morgan_freeman_360.ply"
+    // const viewer = new window.wasmBindings.EmbeddedApp("brush_canvas", `?url=${start_url}&zen=true&focal=0.2&min_radius=1.3&max_radius=2.0&radius=1.5&min_pitch=-15.0&max_pitch=15.0&min_yaw=-45.0&max_yaw=45.0`)
+    const viewer = new window.wasmBindings.EmbeddedApp("brush_canvas", `?url=${start_url}&zen=true`)
+    window.viewer = viewer;
+
+    window.viewer.load_url(start_url);
+    const settings = new window.wasmBindings.CameraSettings(
+      0.3,           // fov_y (f64)
+      0.0, 0.0, -0.95, // position x, y, z (f32)
+      0.0, 0.0, 0.0, // euler_x, euler_y, euler_z (f32, radians)
+      1.0,           // focus_distance (f32)
+      2.0,           // speed_scale (f32 | null)
+      0.66, 1.33,    // min_focus_distance, max_focus_distance
+      -90, 30,    // min_pitch, max_pitch
+      -36000, 36000,    // min_yaw, max_yaw
+    );
+    window.viewer.set_camera_settings(settings);
+  });
+</script>
+
+<script type="module" defer>
+  import init, * as bindings from './static/wasm/brush_app.js';
+  const isWebGPUSupported = 'gpu' in navigator;
+  // Display a warning if WebGPU is not supported.
+  const warningElement = document.getElementById('webgpu-warning');
+  const canvasElement = document.getElementById('brush_canvas');
+
+  // Prevent Brush from stealing focus.
+  const originalFocus = HTMLElement.prototype.focus;
+  HTMLElement.prototype.focus = function () {
+      if (!this.matches('[id="brush_canvas"]')) {
+          originalFocus.apply(this, arguments);
+      }
+  };
+
+  if (isWebGPUSupported) {
+      const wasm = await init({ module_or_path: './static/wasm/brush_app_bg.wasm' });
+      window.wasmBindings = bindings;
+      dispatchEvent(new CustomEvent("TrunkApplicationStarted", { detail: { wasm } }));
+  } else {
+      warningElement.style.display = 'block';
+      canvasElement.style.display = 'none';
+  }
+</script>
+
+
+<script>
+  const liveItems = {
+    "depp": {
+      "ref": "videos/showcase/ref/johnny_depp_512x512.webp",
+      "is_360": false,
+      "url": "/gaussian_gallery/depp_180.ply"
+    },
+    "grandma": {
+      "ref": "videos/showcase/ref/grandma_512x512.webp",
+      "is_360": false,
+      "url": "/gaussian_gallery/grandma_180.ply"
+    },
+    "keanu": {
+      "ref": "videos/showcase/ref/keanu_reeves_512x512.webp",
+      "is_360": false,
+      "url": "/gaussian_gallery/keanu_180.ply"
+    },
+    "michelle_180": {
+      "ref": "videos/showcase/ref/michelle_yeoh.webp_512x512.webp",
+      "is_360": false,
+      "url": "/gaussian_gallery/michelle_180.ply"
+    },
+    "michelle_360": {
+      "ref": "videos/showcase/ref/michelle_2_512x512.webp",
+      "is_360": true,
+      "url": "/gaussian_gallery/michelle_360.ply"
+    },
+    "morgan_freeman": {
+      "ref": "videos/showcase/ref/morgan.webp_512x512.webp",
+      "is_360": true,
+      "url": "/gaussian_gallery/morgan_freeman_360.ply"
+    },
+    "rihanna": {
+      "ref": "videos/showcase/ref/rihanna_hair.png_512x512.webp",
+      "is_360": false,
+      "url": "/gaussian_gallery/rihanna_180.ply"
+    },
+    "robert": {
+      "ref": "videos/showcase/ref/robert_downey_jr.webp_512x512.webp",
+      "is_360": true,
+      "url": "/gaussian_gallery/robert_360.ply"
+    },
+    "sandra": {
+      "ref": "videos/showcase/ref/sandra_bullock_512x512.webp",
+      "is_360": true,
+      "url": "/gaussian_gallery/sandra_360.ply"
+    },
+    "tom_cruise": {
+      "ref": "videos/showcase/ref/tom_cruise_2_512x512.webp",
+      "is_360": true,
+      "url": "/gaussian_gallery/tom_cruise_360.ply"
+    }
+  }
+
+  function loadContent(subject_id) {
+
+    // Set the video URL (you can implement your own logic for this)
+    const videoElement = document.querySelector('#video_animation'); // Assume you have a video element with an ID
+    if (videoElement) {
+        videoElement.src = liveItems[subject_id]["vid"]; // Set the video URL
+        videoElement.poster = liveItems[subject_id]["poster"]; // Set the video poster
+    }
+
+    // Set the image URL (if necessary)
+    const imageElement = document.querySelector('#reference_image'); // Assume you have an image element with an ID
+    if (imageElement) {
+        imageElement.src = liveItems[subject_id]["ref"]; // Set the image URL
+    }
+
+    // Load the viewer URL
+    if (window) {
+      let min_pitch = -15;
+      let max_pitch = 15;
+      let min_yaw = -55;
+      let max_yaw = 55;
+      if (liveItems[subject_id]["is_360"]) {
+        min_pitch = -90;
+        max_pitch = 30;
+        min_yaw = -36000;
+        max_yaw = 36000;
+      }
+      // import init, * as bindings from './static/wasm/brush_app.js';
+      const settings = new window.wasmBindings.CameraSettings(
+        0.3,           // fov_y (f64)
+        0.0, 0.0, -0.95, // position x, y, z (f32)
+        0.0, 0.0, 0.0, // euler_x, euler_y, euler_z (f32, radians)
+        1.0,           // focus_distance (f32)
+        2.0,           // speed_scale (f32 | null)
+        0.66, 1.33,    // min_focus_distance, max_focus_distance
+        min_pitch, max_pitch,    // min_pitch, max_pitch
+        min_yaw, max_yaw,    // min_yaw, max_yaw
+      );
+      window.viewer.load_url(liveItems[subject_id]["url"]); // This will trigger your viewer to load the content
+      window.viewer.set_camera_settings(settings);
+    }
+  }
+
+  // loadContent("abraham")
 </script>
 
   </body>
